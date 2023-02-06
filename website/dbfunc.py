@@ -2,8 +2,8 @@ import mysql.connector
 from mysql.connector import errorcode
  
 hostname = "localhost"
-username = "ben3phillips"
-password = "Uni69Flumpyer4."
+username = #username removed due to security
+password = #password removed due to security
 db = "ben3phillips"
 
 def getConnection():    
