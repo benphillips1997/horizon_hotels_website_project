@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Hotels</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+        <script>
+            function ChangeCurrency(value)
+            {     
+                var multiplyer;
+                var sign;
+                switch (value){
+                    case "gbp":
+                        multiplyer = 1;
+                        sign = "£";
+                        break;                        
+                    case "euros":
+                        multiplyer = 1.2;
+                        sign = "€";
+                        break;
+                    case "usd":
+                        multiplyer = 1.6;
+                        sign = "$";
+                        break;
+                } 
+                
+                var table = document.getElementById("acctable");
+                for (var i = table.rows.length - 1; i > 0; i--){
+                    table.deleteRow(i);
+                }
+                
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function(){
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                        raw_data = JSON.parse(xmlhttp.responseText);
+                        for (const data of raw_data){
+                            var row = table.insertRow(-1);
+                            for (var i = 0; i < 6; i++){
+                                var cell = row.insertCell(i);
+                                switch (i){
+                                    case 0:
+                                        cell.innerHTML = data["city"];
+                                        break;
+                                    case 1:
+                                        cell.innerHTML = data["numofstandardrooms"];
+                                        break;
+                                    case 2:
+                                        cell.innerHTML = data["numofdoublerooms"];
+                                        break;
+                                    case 3: 
+                                        cell.innerHTML = data["numoffamilyrooms"];
+                                        break;
+                                    case 4: 
+                                        price = parseInt(data["peakrate"]) * multiplyer;
+                                        if (price % 1 != 0){
+                                            price = price.toFixed(2);
+                                        }
+                                        cell.innerHTML = sign + String(price);
+                                        break;
+                                    case 5: 
+                                        price = parseInt(data["offpeakrate"]) * multiplyer;
+                                        if (price % 1 != 0){
+                                            price = price.toFixed(2);
+                                        }
+                                        cell.innerHTML = sign + String(price);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                xmlhttp.open("GET", "/changecurrency/?q=" + value + "_getacc", true);
+                xmlhttp.send();
+            }
+
+            function Init()
+            {
+                document.getElementById("currency").value = "{{currency}}";
+                ChangeCurrency(document.getElementById("currency").value)
+            }            
+        </script>
+    </head>
+    <body onload="Init()">
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="currency">
+            <form>
+                <select name="currency" id="currency" onchange="ChangeCurrency(this.value)">
+                    <option value="gbp">GBP</option>
+                    <option value="euros">Euros</option>
+                    <option value="usd">USD</option>
+                </select>
+            </form>
+        </div>
+        <div class="main">
+            <h2>Hotels</h2> 
+            <br>            
+            {% if hotellist != False %}
+            <table id="acctable">
+                <tr>
+                    <th>City</th>
+                    <th>Number of standard rooms</th>
+                    <th>Number of double rooms</th>
+                    <th>Number of family rooms</th>
+                    <th>Peak rate</th>
+                    <th>Off peak rate</th>
+                </tr>
+            {% for hotel in hotellist %}
+                <tr>
+                    <td>{{hotel["city"]}}</td>
+                    <td>{{hotel["numofstandardrooms"]}}</td>
+                    <td>{{hotel["numofdoublerooms"]}}</td>
+                    <td>{{hotel["numoffamilyrooms"]}}</td>
+                    <td>£{{hotel["peakrate"]}}</td>
+                    <td>£{{hotel["offpeakrate"]}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+            {% else %}
+                <p>There are no hotels to view</p>
+            {% endif %}
+            <br>
+            <div class="errormessage">
+                <p id="message" class="center-align"></p><br>
+            </div>
+            <br>
+            <div class="center-align">
+                <div id="basebuttons">
+                    <button type="button" onclick="BaseClicked('add')">Add new hotel</button>
+                    <button type="button" onclick="BaseClicked('update')">Update hotel</button>
+                    <button type="button" onclick="BaseClicked('delete')">Delete hotel</button>
+                </div>
+
+                <div id="addhotel">
+                    <form action="{{url_for('addhotel')}}" method="POST" onsubmit="return CheckForDuplicate();">
+                        <label for="city">Enter the location name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="text" name="city" id="city" required>
+                        <br><br>
+                        <label for="rooms">Enter the maximum rooms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="number" name="rooms" id="rooms" required>
+                        <br><br>
+                        <label for="peakrate">Enter the peak rate in gbp:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="number" name="peakrate" id="peakrate" required>
+                        <br><br>
+                        <label for="offpeakrate">Enter the off-peak rate in gbp:&nbsp;</label>
+                        <input type="number" name="offpeakrate" id="offpeakrate" required>
+                        <br><br>
+                        <input type="submit" value="Add hotel">                        
+                    </form>
+                </div>
+
+                <div id="updatehotel">
+                    <form action="{{url_for('updatehotel')}}" method="POST">
+                        <label for="cityselect">Enter the location name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <select name="cityselect" id="cityselect">
+                            {% for hotel in hotellist %}
+                            <option value="{{hotel['city']}}">{{hotel['city']}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <label for="rooms">Enter the maximum rooms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="number" name="rooms" id="rooms" required>
+                        <br><br>
+                        <label for="peakrate">Enter the peak rate in gbp:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="number" name="peakrate" id="peakrate" required>
+                        <br><br>
+                        <label for="offpeakrate">Enter the off-peak rate in gbp:&nbsp;</label>
+                        <input type="number" name="offpeakrate" id="offpeakrate" required>
+                        <br><br>
+                        <input type="submit" value="Update hotel">                        
+                    </form>
+                </div>
+
+                <div id="deletehotel">
+                    <form action="{{url_for('deletehotel')}}" method="POST">
+                        <p>Select the record you would like to delete</p>
+                        <select name="cityselect" id="cityselect">
+                            {% for hotel in hotellist %}
+                            <option value="{{hotel['city']}}">{{hotel['city']}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="submit" value="Delete hotel">
+                    </form>
+                </div>
+            </div>
+            <br><br><br>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+        <script>
+            function CheckForDuplicate()
+            {
+                table = document.getElementById("acctable");
+
+                duplicate = false;
+                cityInput = document.getElementById("city");
+                
+                for (var i = 0; i < table.rows.length; i++){                    
+                    if (cityInput.value.toLowerCase() == table.rows[i].cells[0].innerHTML.toLowerCase()){
+                        duplicate = true;
+                    }
+                }
+                if (duplicate){
+                    document.getElementById("message").innerHTML = "That record already exists";
+                }
+                return !duplicate;
+            }
+
+            function BaseClicked(action)
+            {
+                var basebuttonsdiv = document.getElementById("basebuttons");
+                basebuttonsdiv.style.display = "none";
+
+                if (action == "add"){
+                    document.getElementById("addhotel").style.display = "block";
+                }
+                else if (action == "delete"){
+                    document.getElementById("deletehotel").style.display = "block";
+                }
+                else{
+                    document.getElementById("updatehotel").style.display = "block";
+                }
+            }
+        </script>
+    </body>
+</html>

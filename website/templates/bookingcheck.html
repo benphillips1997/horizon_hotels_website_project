@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Booking</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+        <script>
+            function ChangeCurrency(value)
+            {                 
+                var multiplyer;
+                var sign;            
+                switch (value){
+                    case "gbp":
+                        multiplyer = 1;
+                        sign = "£";
+                        break;                        
+                    case "euros":
+                        multiplyer = 1.2;
+                        sign = "€";
+                        break;
+                    case "usd":
+                        multiplyer = 1.6;
+                        sign = "$";
+                        break;
+                }
+
+                try{
+                    var price = parseInt("{{standardcost}}") * multiplyer;
+                    if (price % 1 != 0){
+                        price = price.toFixed(2);
+                    }
+                    document.getElementById("standardtext").innerHTML = "Standard room " + sign + String(price);
+                }
+                catch(error){
+                    console.log(error);
+                }             
+
+                try{
+                    var price = parseInt("{{doublecost}}") * multiplyer;
+                    if (price % 1 != 0){
+                        price = price.toFixed(2);
+                    }
+                    document.getElementById("doubletext").innerHTML = "Double room " + sign + String(price);
+                }
+                catch(error){
+                    console.log(error);
+                }
+
+                try{
+                    var price = parseInt("{{familycost}}") * multiplyer;
+                    if (price % 1 != 0){
+                        price = price.toFixed(2);
+                    }
+                    document.getElementById("familytext").innerHTML = "Family room " + sign + String(price);
+                }
+                catch(error){
+                    console.log(error);
+                }     
+
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function(){
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                        reponse = xmlhttp.responseText;
+                    }
+                }
+                xmlhttp.open("GET", "/changecurrency/?q=" + value, true);
+                xmlhttp.send();
+            }
+
+            function Init()
+            {
+                document.getElementById("currency").value = "{{currency}}";
+                ChangeCurrency(document.getElementById("currency").value)
+            }
+        </script>
+    </head>
+    <body onload="Init()">
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>            
+        </nav>
+        <div class="currency">
+            <form>
+                <select name="currency" id="currency" onchange="ChangeCurrency(this.value)">
+                    <option value="gbp">GBP</option>
+                    <option value="euros">Euros</option>
+                    <option value="usd">USD</option>
+                </select>
+            </form>
+        </div>
+        <div class="main">
+            <div class="center-align">
+        {% if numOfRooms > 0 %}
+            <br>
+            <p>Check in date: {{checkin}}</p><br>
+            <p>Check out date: {{checkout}}</p><br>
+            <p>Number of guests: {{guestnum}}</p><br>
+            <p>Destination: {{city}}</p><br>
+            <br><br><br>
+            <form action="{{url_for('bookingend')}}" method="POST">
+            <div class="myradioform">
+            {% if guestnum == 1 %}
+                <label for="standardroom" id="standardtext">Standard room £{{standardcost}}</label>
+                <input type="radio" name="room" value="Standard" required><br><br>
+                <label for="doubleroom" id="doubletext">Double room £{{doublecost}}</label>
+                <input type="radio" name="room" value="Double"><br><br>
+            {% endif %}
+            {% if guestnum == 2 %}
+                <label for="doubleroom" id="doubletext">Double room £{{doublecost}}</label>
+                <input type="radio" name="room" value="Double" required><br><br>
+            {% endif %}
+            <!--{% if guestnum > 2 %}
+                <label for="standardroom" id="standardroomtext">Standard room £0</label>
+                <select name="standardroom" id="standardroom" onchange="SetRooms('standardroom')">
+                    <option value="0">0</option>
+                    {% for num in range(1, guestnum + 1) %}
+                    <option value="{{num}}">{{num}}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <label for="doubleroom" id="doubleroomtext">Double room £0</label>
+                <select name="doubleroom" id="doubleroom" onchange="SetRooms('doubleroom')">
+                    <option value="0">0</option>
+                    {% for num in range(1, guestnum + 1) %}
+                    <option value="{{num}}">{{num}}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <label for="familyroom" id="familyroomtext">Family room £0</label>
+                <select name="familyroom" id="familyroom" onchange="SetRooms('familyroom')">
+                    <option value="0">0</option>
+                    {% for num in range(1, guestnumdiv3 + 1) %}
+                    <option value="{{num}}">{{num}}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            {% endif %}-->
+            {% if guestnum > 2 %}
+                <label for="familyroom" id="familytext">Family room £{{familycost}}</label>
+                <input type="radio" name="room" value="Family" required><br><br>            
+            {% endif %}
+            </div>
+            <script>
+                
+                var rooms = ["standardroom", "doubleroom", "familyroom"];
+
+                function SetRooms(type)
+                {
+                    var standardValue = parseInt(document.getElementById("standardroom").value);
+                    var doubleValue = parseInt(document.getElementById("doubleroom").value);
+                    var familyValue = parseInt(document.getElementById("familyroom").value);                    
+                    document.getElementById("standardroomtext").innerHTML = "Standard room £" + (parseInt('{{standardcost}}') * standardValue);
+                    document.getElementById("doubleroomtext").innerHTML = "Double room £" + (parseInt('{{doublecost}}') * doubleValue);
+                    document.getElementById("familyroomtext").innerHTML = "Family room £" + (parseInt('{{familycost}}') * familyValue);
+                    
+                    var total = standardValue + doubleValue + (familyValue * 3);
+                    var remainder = parseInt('{{guestnum}}') - total;
+                    
+                    for (const room of rooms)
+                    {                        
+                        var value = parseInt(document.getElementById(room).value);
+                        if (room == "familyroom")
+                        {
+                            remainder = Math.ceil(remainder / 3);
+                        }
+
+                        if (room == type)
+                        {   
+                            if (room == "familyroom")
+                            {
+                                var guestnumdiv3 = Math.ceil(parseInt('{{guestnum}}') / 3);
+                                var amount = guesnumdiv3 - value;
+                            }
+                            else
+                            {
+                                var amount = parseInt('{{guestnum}}') - value;
+                            }
+                            RemoveOptions(document.getElementById(room, amount));
+                        }
+                        else
+                        {
+                            RemoveOptions(document.getElementById(room));
+                        }
+
+                        for (var num = 1; num <= remainder; num++)
+                        {
+                            var option = new Option(num.toString(), num);
+                            document.getElementById(room).add(option, null);
+                        }
+
+                        if (remainder <= value)
+                        {
+                            document.getElementById(room).selectedIndex = value.toString();
+                        }
+                        else
+                        {
+                            document.getElementById(room).selectedIndex = "0";
+                        }
+                    }
+                }
+                
+                function RemoveOptions(selectElement, amount = 0) 
+                {
+                    var amountToMinus = -1 - amount;
+                    var i, L = selectElement.options.length - amountToMinus;
+                    for(i = L; i >= 1; i--) 
+                    {
+                        selectElement.remove(i);
+                    }
+                }
+            </script>
+                <br><br><br>
+                <p>Please enter your payment details</p><br><br>
+                <label for="cardholdername">Cardholder name</label><br>
+                <input type="text" name="cardholdername" placeholder="John Smith" required><br><br>
+                
+                <label for="cardnum">Card number</label><br>
+                <input type="text" name="cardnum" placeholder="0000-0000-0000-0000" required><br><br>
+
+                <label for="expiry">Expiry</label><br>
+                <input type="text" name="expiry" placeholder="01-25" required><br><br>
+
+                <label for="cvv">CVV</label><br>
+                <input type="text" name="cvv" placeholder="000" required><br><br>
+
+                <input type="submit" value="Procceed"><br><br>
+            </form>
+        {% else %}
+            <p>Sorry we do not have any rooms available in that destination</p><br>
+        {% endif %}
+            </div>
+            <br>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>

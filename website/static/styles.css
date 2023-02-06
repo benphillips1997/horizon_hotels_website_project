@@ -1,0 +1,363 @@
+/*written by Ben Phillips - 21067833*/
+
+*{
+    box-sizing: border-box;
+}
+
+#navbar ul{
+	background: -moz-linear-gradient(top, #4296ce, #0366a8);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4296ce), to(#0366a8));
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+    padding: 0px;
+}
+   
+#navbar li{
+    display: inline-flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    list-style-type: none;
+}
+   
+#navbar li a{
+    font-size: 24px;
+    display: block;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 25px;
+    text-decoration: none;
+}
+   
+#navbar li a:hover{
+    color: #3bb5e6;
+}
+
+.imgcenter{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inlinecenter{
+    text-align: center;
+    display: inline-flex;
+}
+
+.inlinecenter p{
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+html{
+    height: 100%;
+    background: -moz-linear-gradient(top, #56daf1, #27d4f3);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#56daf1), to(#27d4f3));
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    margin: 0;
+}
+
+body{
+    margin: 0;
+}
+
+.main{
+    margin-left: 10%;
+    margin-right: 10%;
+    height: 100%;
+}
+
+footer{
+    position: fixed;
+    margin-top: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #0366a8;
+    padding: 15px;
+}
+
+.footertext{
+    text-align: center;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footertext a:hover{
+    text-decoration: underline;
+}
+
+img{
+    max-width: 70%;
+    height: 70%;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+a:hover{
+    color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6, p, label, li, a{
+    color: #0669aa;
+    font-family: Arial, Helvetica, sans-serif;
+    font-variant: small-caps;
+    font-weight: bold;
+    opacity: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+h1{
+    text-align: center;
+    font-size: 100px;
+}
+
+h2{
+    text-align: center;
+    font-size: 85px;
+}
+
+h3{
+    text-align: center;
+    font-size: 70px;
+}
+
+h4{
+    text-align: center;
+    font-size: 55px;
+}
+
+h5{
+    font-size: 40px;
+}
+
+h6{
+    text-align: center;
+    font-size: 28px;
+}
+
+p{
+    font-size: 24px;
+}
+
+.notcaps{
+    font-variant: normal;
+}
+
+.homelinks{
+    font-size: 40px;
+    font-variant: normal;
+}
+
+a{
+    font-size: 18px;
+}
+
+.px18{
+    font-size: 18px;
+}
+
+input, label{
+    width: 100%;
+}
+
+input, select{
+    font-size: 24px;
+    color: #000000;
+    background-color: rgb(231, 231, 231);
+    border-radius: 25px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 30%;
+    min-width: 200px;
+    border-width: 1px;
+    border-color: #000000;
+}
+
+input[type="radio"]{
+    font-size: 24px;
+    color: #000000;
+    background-color: rgb(231, 231, 231);
+    border-radius: 0px;
+    padding: 0px;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 0%;
+}
+
+input[type="Submit"]{
+    font-size: 20px;
+    width: 20%;
+    text-align: center;
+}
+
+label{
+    font-size: 30px;
+    color: #0669aa;
+}
+
+.privacytext h1, .privacytext h2, .privacytext h3, .privacytext h4, .privacytext h5, .privacytext h6, .privacytext p, .privacytext a, .privacytext li{
+    font-family: Arial, Helvetica, sans-serif;
+    font-variant: normal;
+    text-align: left;
+}
+
+.privacytext p, .privacytext a, .privacytext li{
+    font-size: 26px;
+}
+
+.privacytext h1{
+    font-size: 50px;
+}
+
+.privacytext h2{
+    font-size: 44px;
+}
+
+.privacytext h3{
+    font-size: 40px;
+}
+
+table{
+    margin-left: 5%;
+    width: 90%;
+    padding: 0px;
+}
+
+th{
+    font-size: 1.5vw;
+}
+
+td{
+    font-size: 1.3vw;
+}
+
+table, th, td{
+    color: #0669aa;
+    border: 1px solid #0d344e;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button{
+    font-size: 26px;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    border-radius: 10px;
+    color: #0669aa;
+    font-weight: bold;
+}
+
+.center-align{
+    text-align: center;
+}
+
+.left-align{
+    text-align: left;
+}
+
+.right-align{
+    text-align: right;
+}
+
+/*.bgbar{
+    width: 75%;
+    margin-left: 12.5%;
+    margin-right: 12.5%;
+    background: -moz-linear-gradient(top, #0471ba, #0366a8);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4296ce), to(#0366a8));
+    border-radius: 20px;
+    opacity: 90%;
+}*/
+
+/*.book-now{
+    background-color: rgb(12, 57, 116);
+    margin-left: 10%;
+    margin-right: 10%;
+    border-radius: 25px;
+    padding: 10px;
+}*/
+
+.account-buttons{
+    margin-left: 10%;
+    width: 80%;
+}
+
+.currency{
+    text-align: right;
+    margin-right: 5%;
+}
+
+.currency select{
+    width: 10%;
+    font-size: 18px;
+}
+
+.book-now a{
+    text-decoration: none;
+}
+
+.book-now a:hover{
+    font-size: 6.5vw;
+}
+
+.myradioform{
+    color: #000000;
+    border-radius: 0px;
+    padding: 0px;
+}
+
+.errormessage p{
+    color: #eb1212;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.successmessage p{
+    color: #145c8b;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.accommodationlist{
+    text-align: left;
+    margin-left: 10%;
+    width: 80%;
+}
+
+.accommodationlist h4{
+    text-align: left;
+}
+
+#cancelbooking{
+    display: none;
+}
+
+#cancelbooking input{
+    width: 20%;
+}
+
+#bookingsbuttons{
+    display: block;
+}
+
+#inputdivfirstname, #inputdivsurname, #inputdivemail, #inputdivpassword, #inputdivnumber, #inputdivaddress, #inputdivpostcode{
+    display: none;
+}
+
+#addhotel, #deletehotel, #updatehotel{
+    display: none;
+}

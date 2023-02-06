@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Sign up</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+        <script>
+            function CheckPasswords()
+            {
+                var password = document.getElementById("password").value;
+                var confirmpassword = document.getElementById("confirmpassword").value;
+
+                if (password == confirmpassword){
+                    return true;
+                }
+                document.getElementById("passwordsdontmatch").innerHTML = "Passwords do not match";
+                return false;                
+            }
+        </script>
+    </head>
+    <body>
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>            
+        </nav>
+        <div class="main">
+            <br><br><br>
+            {% if message != False %}
+            <div class="center-align">
+                <div class="errormessage">
+                    <p>{{message}}</p>
+                </div>
+            </div>
+            <br><br><br>
+            {% endif %}            
+            <div class="center-align">
+                <form action="{{url_for('signupsubmit')}}" method = "POST" onsubmit="return CheckPasswords();">
+                    <label for="firstname">First name:</label><br>
+                    <input type="text" name="firstname" required><br><br><br>
+
+                    <label for="surname">Surname:</label><br>
+                    <input type="text" name="surname" required><br><br><br>
+
+                    <label for="email">Email address:</label><br>
+                    <input type="email" name="email" id="email" required><br><br><br>
+                    
+                    <label for="password">Password:</label><br>
+                    <input type="password" name="password" id="password" required><br>
+                    <label for="confirmpassword">Confirm password:</label><br>
+                    <input type="password" name="confirmpassword" id="confirmpassword" required><br><br><br>
+
+                    <label for="number">Phone number:</label><br>
+                    <input type="tel" name="number" required><br><br><br>
+
+                    <label for="address">Address:</label><br>
+                    <input type="text" name="address" required><br><br><br>
+
+                    <label for="postcode">Postcode:</label><br>
+                    <input type="text" name="postcode" required><br><br><br>
+
+                    <div class="errormessage">
+                        <p id="passwordsdontmatch"></p><br><br>
+                    </div>
+
+                    <input type="submit" value="Create account"><br><br>
+                </form>
+            </div>
+            <br><br><br><br><br><br><br>
+        </div>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Bookings</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+        <script>
+            function SetEndDate(type)
+            {
+                if (type == "checkin"){
+                    var date = document.getElementById("checkinfrom").value;
+                    document.getElementById("checkinto").min = date;
+                    document.getElementById("checkinto").required = true;
+                }
+                else{
+                    var date = document.getElementById("bookingmadefrom").value;
+                    document.getElementById("bookingmadeto").min = date;
+                    document.getElementById("bookingmadeto").required = true;
+                }
+            }
+            
+            function Refresh(value = document.getElementById("currency").value)
+            {
+                var multiplyer;
+                var sign;
+                switch (value){
+                    case "gbp":
+                        multiplyer = 1;
+                        sign = "£";
+                        break;                        
+                    case "euros":
+                        multiplyer = 1.2;
+                        sign = "€";
+                        break;
+                    case "usd":
+                        multiplyer = 1.6;
+                        sign = "$";
+                        break;
+                } 
+
+                selectedCity = document.getElementById("citylist").value;
+                checkinfrom = document.getElementById("checkinfrom").value;
+                checkinto = document.getElementById("checkinto").value;
+                bookingmadefrom = document.getElementById("bookingmadefrom").value;
+                bookingmadeto = document.getElementById("bookingmadeto").value;
+
+                var str = `${selectedCity}_${checkinfrom}_${checkinto}_${bookingmadefrom}_${bookingmadeto}`;
+
+                table = document.getElementById("bookingstable");
+                for (var i = table.rows.length - 1; i > 0; i--){
+                    table.deleteRow(i);
+                }
+                
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function(){
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                        raw_data = JSON.parse(xmlhttp.responseText);                        
+                        for (const data of raw_data){
+                            var row = table.insertRow(-1);
+                            for (var i = 0; i < 9; i++){
+                                var cell = row.insertCell(i);
+                                switch (i){
+                                    case 0:
+                                        cell.innerHTML = data["bookingID"];
+                                        break;
+                                    case 1:
+                                        cell.innerHTML = data["email"];
+                                        break;
+                                    case 2:
+                                        cell.innerHTML = data["checkindate"];
+                                        break;
+                                    case 3:
+                                        cell.innerHTML = data["checkoutdate"];
+                                        break;
+                                    case 4: 
+                                        cell.innerHTML = data["guestnum"];
+                                        break;
+                                    case 5: 
+                                        cell.innerHTML = data["city"];
+                                        break;
+                                    case 6: 
+                                        cell.innerHTML = data["roomtype"];
+                                        break;
+                                    case 7: 
+                                        price = parseInt(data["price"]) * multiplyer;
+                                        if (price % 1 != 0){
+                                            price = price.toFixed(2);
+                                        }
+                                        cell.innerHTML = sign + String(price);
+                                        break;
+                                    case 8:
+                                        cell.innerHTML = data["datecreated"];
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                xmlhttp.open("GET", "/filter/?q=" + str, true);
+                xmlhttp.send();
+            }
+
+            function ChangeCurrency(value){
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function(){
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                        response = xmlhttp.responseText;
+                    }
+                }                        
+                xmlhttp.open("GET", "/changecurrency/?q=" + value, true);
+                xmlhttp.send();
+                Refresh(value);
+            }
+
+            function Reset()
+            {
+                document.getElementById("citylist").value = "all";
+                document.getElementById("checkinfrom").value = "";
+                document.getElementById("checkinto").value = "";
+                document.getElementById("bookingmadefrom").value = "";
+                document.getElementById("bookingmadeto").value = "";
+                document.getElementById("checkinto").setAttribute("min", new Date(2000, 10, 12));
+                document.getElementById("bookingmadeto").setAttribute("min", new Date(2000, 10, 12));
+                document.getElementById("cancelbooking").style.display = "none";
+                document.getElementById("bookingsbuttons").style.display = "block";
+            }
+
+            function MoveToCancel()
+            {
+                document.getElementById("cancelbooking").style.display = "block";
+                document.getElementById("bookingsbuttons").style.display = "none";
+            }
+
+            function Init()
+            {
+                document.getElementById("currency").value = "{{currency}}";
+                Refresh(document.getElementById("currency").value)
+            }
+        </script>
+    </head>
+    <body onload="Init()">
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <br>
+        <div class="currency">
+            <form>
+                <select name="currency" id="currency" onchange="ChangeCurrency(this.value)">
+                    <option value="gbp">GBP</option>
+                    <option value="euros">Euros</option>
+                    <option value="usd">USD</option>
+                </select>
+            </form>
+        </div>
+        <div class="main">
+            <div class="center-align">
+            <h3>Bookings</h3>
+            <br><br>
+            {% if bookings != False %}
+            <form action="">
+                <label for="citylist">Filter cities:</label>
+                <select name="citylist" id="citylist">
+                    <option value="all" selected default>All</option>
+                    {% for city in cities %}
+                    <option value="{{city}}">{{city}}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <label for="checkinfrom">Filter check in date from:</label>
+                <input type="date" name="checkinfrom" id="checkinfrom" onchange="SetEndDate('checkin')">
+                <label for="checkinto">&nbsp;&nbsp;&nbsp;To:</label>
+                <input type="date" name="checkinto" id="checkinto">
+                <br><br>
+                <label for="bookingmadefrom">Filter date booked from:</label>
+                <input type="date" name="bookingmadefrom" id="bookingmadefrom" onchange="SetEndDate('bookingmade')">
+                <label for="bookingmadeto">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To:</label>
+                <input type="date" name="bookingmadeto" id="bookingmadeto">
+            </form>
+            <br><br>            
+                <button type="button" onclick="Refresh()">Filter</button>
+                <button type="button" onclick="Reset()">Reset</button>
+            </div>
+            <br>  
+            <br>
+            <table id="bookingstable">
+                <tr>
+                    <th>Booking ID</th>
+                    <th>User email</th>
+                    <th>Check in date</th>
+                    <th>Check out date</th>
+                    <th>Number of guests</th>
+                    <th>Destination</th>
+                    <th>Room type</th>
+                    <th>Total price</th>
+                    <th>Date booked</th>
+                </tr>
+            {% for booking in bookings %}
+                <tr>
+                    <td>{{booking["bookingID"]}}</td>
+                    <td>{{booking["email"]}}</td>
+                    <td>{{booking["checkindate"]}}</td>
+                    <td>{{booking["checkoutdate"]}}</td>
+                    <td>{{booking["guestnum"]}}</td>
+                    <td>{{booking["city"]}}</td>
+                    <td>{{booking["roomtype"]}}</td>
+                    <td>£{{booking["price"]}}</td>
+                    <td>{{booking["datecreated"]}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+            <br>
+            <div id="bookingsbuttons">
+            <div class="account-buttons">
+                <div class="center-align">
+                    <button type="button" onclick="MoveToCancel()">Cancel bookings</button>
+                </div>
+            </div>
+            </div>
+            <div id="cancelbooking">
+                <div class="center-align">
+                    {% if bookings != False %}
+                    <p>Select the booking ID of the booking you want to cancel</p>
+                    <form action="{{url_for('cancelbookingadmin')}}" method="POST">
+                        <select name="bookingID">
+                            {% for booking in bookings %}
+                            <option value="{{booking['bookingID']}}">{{booking['bookingID']}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <input type="submit" value="Cancel booking">
+                    </form>
+                    {% endif %}
+                </div> 
+            </div>
+            {% else %}
+                <p class="center-align">There are no bookings to view</p>
+            {% endif %}
+            <br>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>

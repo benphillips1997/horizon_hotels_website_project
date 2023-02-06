@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Booking</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+        <script>
+            function ChangeCurrency(value)
+            {                 
+                var multiplyer;
+                var sign;
+                switch (value){
+                    case "gbp":
+                        multiplyer = 1;
+                        sign = "£";
+                        break;                        
+                    case "euros":
+                        multiplyer = 1.2;
+                        sign = "€";
+                        break;
+                    case "usd":
+                        multiplyer = 1.6;
+                        sign = "$";
+                        break;
+                } 
+                
+                var price = parseInt("{{price}}") * multiplyer
+                if (price % 1 != 0){
+                    price = price.toFixed(2);
+                }
+                document.getElementById("price").innerHTML = "Price: " + sign + String(price);
+
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function(){
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                        reponse = xmlhttp.responseText;
+                    }
+                }
+                xmlhttp.open("GET", "/changecurrency/?q=" + value, true);
+                xmlhttp.send();
+            }
+
+            function Init()
+            {
+                document.getElementById("currency").value = "{{currency}}";
+                ChangeCurrency(document.getElementById("currency").value)
+            }
+
+            /*function Save()
+            {
+                var checkin = document.getElementById("checkin").innerHTML;
+                var checkout = document.getElementById("checkout").innerHTML;
+                var guestnum = document.getElementById("guestnum").innerHTML;
+                var destination = document.getElementById("destination").innerHTML;
+                var room = document.getElementById("room").innerHTML;
+                var price = document.getElementById("price").innerHTML;                
+                window.alert("done");
+                var blob = new Blob([`${checkin}\n${checkout}\n${guestnum}\n${destination}\n${room}\n${price}`], {type: "text/plain;charset=utf-8"});
+                FileSaver.saveAs(blob, "bookinginfo.txt");                
+            }*/
+        </script>
+    </head>
+    <body onload="Init()">
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>            
+        </nav>
+        <div class="currency">
+            <form>
+                <select name="currency" id="currency" onchange="ChangeCurrency(this.value)">
+                    <option value="gbp">GBP</option>
+                    <option value="euros">Euros</option>
+                    <option value="usd">USD</option>
+                </select>
+            </form>
+        </div>
+        <div class="main">
+            <div class="center-align">
+                <br><br>
+                <p id="checkin">Check in date: {{checkin}}</p><br>
+                <p id="checkout">Check out date: {{checkout}}</p><br>
+                <p id="guestnum">Number of guests: {{guestnum}}</p><br>
+                <p id="destination">Destination: {{destination}}</p><br>
+                <p id="room">Room type: {{room}}</p><br>
+                <p id="price">Price: £{{price}}</p><br>
+                <br><br><br>
+                <!--<button type="button" name="save" id="save" onclick="Save()">Save</button>-->
+                <button type="button" name="print" id="print" onclick="window.print()">Print</button>
+            </div>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>

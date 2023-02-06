@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Login</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+    </head>
+    <body>
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>            
+        </nav>
+        <div class="main">
+            <br>
+            <div class="center-align">
+                <br>
+                {% if message != False %}
+                <div class="errormessage">
+                    <p>{{message}}</p>
+                </div>
+                <br><br>
+                {% endif %}
+                <form action="{{url_for('loginsubmit')}}" method = "POST">
+                    <label for="email">Email address:</label><br>
+                    <input type="email" name="email" required><br><br>
+                    
+                    <label for="password">Password:</label><br>
+                    <input type="password" name="password" required><br><br><br>
+
+                    <input type="submit" value="Login">
+                </form>
+                <br><br><br>
+                <p>Don't have an account? <a href="{{url_for('signup')}}">Sign up here</a></p><br>
+            </div>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>

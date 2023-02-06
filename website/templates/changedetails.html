@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Details</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+        <script>
+            function DisplayInput(linkname, divname, inputid)
+            {
+                var link = document.getElementById(linkname);
+                var div = document.getElementById(divname);
+                var input = document.getElementById(inputid);
+                if (link.innerHTML == "Edit"){
+                    div.style.display = "block";
+                    link.innerHTML = "Cancel";
+                }
+                else{
+                    div.style.display = "none";
+                    link.innerHTML = "Edit";
+                    input.value = "";
+                }
+            }
+
+            function CheckInput()
+            {
+                allInputs = [document.getElementById('firstname'), document.getElementById('surname'), document.getElementById('email'), document.getElementById('password'), 
+                    document.getElementById('number'), document.getElementById('address'), document.getElementById('postcode')];
+                isInput = false;
+                for (const input of allInputs){
+                    if (input.value != ""){
+                        isInput = true;
+                    }
+                }
+                return isInput;
+            }
+        </script>
+    </head>
+    <body>
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="main">
+            <h3>Edit your details</h3>
+            <br>
+            <div class="center-align">
+            {% if message != null %}
+            <br>
+            <div class="errormessage">
+                <p>{{message}}</p>
+            </div>
+            <br>
+            {% endif %}
+            <br>
+            <form action="{{url_for('updatedetails')}}" method="POST" onsubmit="return CheckInput();">
+                <label for="firstname">First name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputfirstname" onclick="DisplayInput('showinputfirstname', 'inputdivfirstname', 'firstname')">Edit</a><br><br>
+                <div id="inputdivfirstname">
+                    <input type="text" name="firstname" id="firstname" value=""><br><br><br><br>
+                </div>
+
+                <label for="surname">Surname&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputsurname" onclick="DisplayInput('showinputsurname', 'inputdivsurname', 'surname')">Edit</a><br><br>
+                <div id="inputdivsurname">
+                    <input type="text" name="surname" id="surname" value=""><br><br><br><br>
+                </div>
+
+                <label for="email">Email address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputemail" onclick="DisplayInput('showinputemail', 'inputdivemail', 'email')">Edit</a><br><br>
+                <div id="inputdivemail">
+                    <input type="email" name="email" id="email" value=""><br><br><br><br>
+                </div>
+
+                <label for="password">Password&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputpassword" onclick="DisplayInput('showinputpassword', 'inputdivpassword', 'password')">Edit</a><br><br>
+                <div id="inputdivpassword">
+                    <input type="password" name="password" id="password" value=""><br><br><br><br>
+                </div>
+
+                <label for="number">Phone number&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputnumber" onclick="DisplayInput('showinputnumber', 'inputdivnumber', 'number')">Edit</a><br><br>
+                <div id="inputdivnumber">
+                    <input type="tel" name="number" id="number" value=""><br><br><br><br>
+                </div>
+
+                <label for="address">Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputaddress" onclick="DisplayInput('showinputaddress', 'inputdivaddress', 'address')">Edit</a><br><br>
+                <div id="inputdivaddress">
+                    <input type="text" name="address" id="address" value=""><br><br><br><br>
+                </div>
+
+                <label for="postcode">Postcode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <a id="showinputpostcode" onclick="DisplayInput('showinputpostcode', 'inputdivpostcode', 'postcode')">Edit</a><br><br>
+                <div id="inputdivpostcode">
+                    <input type="text" name="postcode" id="postcode" value=""><br><br><br><br><br>
+                </div>
+                <br>
+
+                <label for="confirmpassword">Please confirm your current password:</label><br>
+                <input type="password" name="confirmpassword" id="confirmpassword" required><br><br><br>
+                    
+                <input type="submit" value="Confirm change details"><br><br>
+            </form>
+            </div>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horizon Hotels | Account</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script type="text/javascript">
+            function googleTranslateElementInit() 
+            {
+                new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+            }
+        </script>
+    </head>
+    <body>
+        <nav id="navbar">
+            <ul>
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('booking')}}">Booking</a></li>
+                <li><a href="{{url_for('account')}}">Account</a></li>
+                {% if loggedIn %}
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="main">
+            <br>
+            <h3>Hello {{name}}</h3>
+            <br><br><br>
+            <div class="center-align">
+                <div class="account-buttons">
+                    {% if type == 'admin' %}
+                    <a href="{{url_for('userbookings')}}"><button type="button">View or manage your bookings</button></a>
+                    <a href="{{url_for('changedetails')}}"><button type="button">Change your information</button></a>
+                    <br><br>
+                    <a href="{{url_for('adminbookings')}}"><button type="button">View or manage all bookings</button></a>
+                    <a href="{{url_for('adminhotels')}}"><button type="button">View or manage hotels</button></a>
+                    {% else %}
+                    <a href="{{url_for('userbookings')}}"><button type="button">View or manage bookings</button></a>
+                    <a href="{{url_for('changedetails')}}"><button type="button">Change your information</button></a>
+                    {% endif %}
+                </div>
+            </div>
+            <br>
+        </div><br><br><br><br><br><br><br>
+        <footer>
+            <p class="footertext"><a class="footertext" href="{{url_for('privacypolicy')}}">Privacy policy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="footertext" href="{{url_for('contactus')}}">Contact us</a></p>
+        </footer>
+    </body>
+</html>
